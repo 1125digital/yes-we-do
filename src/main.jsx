@@ -2,6 +2,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import Landing from './Landing.jsx'
 
 import Register from './Register.jsx'
 import Album from './Album.jsx'
@@ -33,7 +34,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   <Route path="/:slug" element={<Muro />} /> {/* ✅ ESTA ES LA QUE FALTABA */}
 
   <Route path="/bienvenida" element={<AppLayout><Welcome /></AppLayout>} />
-  <Route path="/" element={<AppLayout><Muro /></AppLayout>} />
+  <Route path="/" element={<Landing />} />
   <Route path="/album" element={<AppLayout><Album /></AppLayout>} />
   <Route path="/mensajes" element={<AppLayout><Mensajes /></AppLayout>} />
   <Route path="/agenda" element={<AppLayout><Agenda /></AppLayout>} />
