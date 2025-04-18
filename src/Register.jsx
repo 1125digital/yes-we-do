@@ -38,6 +38,7 @@ function Register() {
       body: JSON.stringify({ email, nombre, clave }),
     });
   };
+
   const handleRegistro = async () => {
     if (!nombre || !relacion || !email) {
       alert('Por favor completa todos los campos obligatorios.');
@@ -134,28 +135,23 @@ function Register() {
     }
 
     setGuardando(false);
-    navigate(`/${slug}`);
+    navigate(`/${slug}/muro`);
   };
+
   if (loading) return <p>Cargando información de la boda...</p>;
   if (!bodaId) return <p>Boda no encontrada.</p>;
 
   return (
-    <div style={{ maxWidth: '500px', margin: '0 auto', padding: '2rem', fontFamily: 'sans-serif', textAlign: 'center' }}>
+    <div style={styles.container}>
       <h2>Registro de Invitado</h2>
 
-      <input
-        type="text"
-        placeholder="Tu nombre completo"
-        value={nombre}
-        onChange={(e) => setNombre(e.target.value)}
-        style={inputStyle}
-      />
+      <p style={{ marginBottom: '1rem', color: '#555' }}>
+        Al registrarte en esta boda, recibirás un correo con tu código único para acceder a la aplicación.
+      </p>
 
-      <select
-        value={relacion}
-        onChange={(e) => setRelacion(e.target.value)}
-        style={inputStyle}
-      >
+      <input type="text" placeholder="Tu nombre completo" value={nombre} onChange={(e) => setNombre(e.target.value)} style={styles.input} />
+
+      <select value={relacion} onChange={(e) => setRelacion(e.target.value)} style={styles.input}>
         <option value="">Selecciona tu relación con los novios</option>
         <option value="Amigo de la novia">Amigo de la novia</option>
         <option value="Amigo del novio">Amigo del novio</option>
@@ -165,70 +161,58 @@ function Register() {
       </select>
 
       {relacion === 'Otro' && (
-        <input
-          type="text"
-          placeholder="¿Cuál es tu relación?"
-          value={otraRelacion}
-          onChange={(e) => setOtraRelacion(e.target.value)}
-          style={inputStyle}
-        />
+        <input type="text" placeholder="¿Cuál es tu relación?" value={otraRelacion} onChange={(e) => setOtraRelacion(e.target.value)} style={styles.input} />
       )}
 
-      <textarea
-        placeholder="Cuéntanos tu historia con los novios"
-        value={historia}
-        onChange={(e) => setHistoria(e.target.value)}
-        style={inputStyle}
-      />
+      <textarea placeholder="Cuéntanos tu historia con los novios" value={historia} onChange={(e) => setHistoria(e.target.value)} style={styles.textarea} />
 
-      <input
-        type="text"
-        placeholder="Tus redes sociales (opcional)"
-        value={redes}
-        onChange={(e) => setRedes(e.target.value)}
-        style={inputStyle}
-      />
+      <input type="text" placeholder="Tus redes sociales (opcional)" value={redes} onChange={(e) => setRedes(e.target.value)} style={styles.input} />
 
-      <input
-        type="email"
-        placeholder="Tu correo electrónico"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        style={inputStyle}
-      />
+      <input type="email" placeholder="Tu correo electrónico" value={email} onChange={(e) => setEmail(e.target.value)} style={styles.input} />
 
       <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>
         Sube tu foto de perfil
       </label>
-      <input
-        type="file"
-        accept="image/*"
-        onChange={(e) => setFotoFile(e.target.files[0])}
-        style={inputStyle}
-      />
+      <input type="file" accept="image/*" onChange={(e) => setFotoFile(e.target.files[0])} style={styles.input} />
 
-      <button onClick={handleRegistro} disabled={guardando} style={buttonStyle}>
+      <button onClick={handleRegistro} disabled={guardando} style={styles.boton}>
         {guardando ? 'Guardando...' : 'Registrarme'}
       </button>
     </div>
   );
 }
 
-const inputStyle = {
-  width: '100%',
-  padding: '10px',
-  marginBottom: '1rem',
-  borderRadius: '6px',
-  border: '1px solid #ccc',
-};
-
-const buttonStyle = {
-  padding: '10px 20px',
-  backgroundColor: '#2980b9',
-  color: '#fff',
-  border: 'none',
-  borderRadius: '6px',
-  cursor: 'pointer',
+const styles = {
+  container: {
+    maxWidth: '500px',
+    margin: '0 auto',
+    padding: '2rem',
+    fontFamily: 'sans-serif',
+    textAlign: 'center',
+  },
+  input: {
+    width: '100%',
+    padding: '10px',
+    marginBottom: '1rem',
+    borderRadius: '6px',
+    border: '1px solid #ccc',
+  },
+  textarea: {
+    width: '100%',
+    padding: '10px',
+    minHeight: '80px',
+    marginBottom: '1rem',
+    borderRadius: '6px',
+    border: '1px solid #ccc',
+  },
+  boton: {
+    padding: '10px 20px',
+    backgroundColor: '#2980b9',
+    color: '#fff',
+    border: 'none',
+    borderRadius: '6px',
+    cursor: 'pointer',
+  },
 };
 
 export default Register;
