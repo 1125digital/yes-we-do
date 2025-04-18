@@ -1,14 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from './supabaseClient';
 import { useBoda } from './hooks/useBoda';
+import { useNavigate } from 'react-router-dom'; // ✅ agregado
 
 function Welcome() {
+  const navigate = useNavigate(); // ✅ inicializado
   const { bodaId, loading } = useBoda();
   const [nombreInvitado, setNombreInvitado] = useState('');
   const [nombreNovios, setNombreNovios] = useState('');
   const [fecha, setFecha] = useState('');
   const [ubicacion, setUbicacion] = useState('');
   const [diasRestantes, setDiasRestantes] = useState(null);
+
+  useEffect(() => {
+    const novios = JSON.parse(localStorage.getItem('yeswedo_novios'));
+    if (novios?.boda_id) {
+      navigate(`/${novios.boda_id}/muro`);
+    }
+  }, []);
 
   useEffect(() => {
     const invitado = JSON.parse(localStorage.getItem('yeswedo_invitado'));

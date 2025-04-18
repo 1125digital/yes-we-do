@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
+import RegistroNovios from './RegistroNovios';
 
 function DashboardPanel() {
   const { slug } = useParams();
@@ -38,6 +39,10 @@ function DashboardPanel() {
         <Link to={`/${slug}/panel/mesas`} style={styles.card}>🪑 Layout de Mesas</Link>
         <Link to={`/${slug}/panel/invitados`} style={styles.card}>👤 Invitados</Link>
         <Link to={`/${slug}/panel/fotos`} style={styles.card}>📷 Muro y Fotos</Link>
+      </div>
+
+      <div style={{ marginTop: '3rem' }}>
+        <RegistroNovios bodaId={boda.id} />
       </div>
     </div>
   );

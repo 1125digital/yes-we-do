@@ -17,6 +17,27 @@ function Register() {
   const [fotoFile, setFotoFile] = useState(null);
   const [guardando, setGuardando] = useState(false);
 
+  const generarClaveUnica = async () => {
+    let clave, existe = true;
+    while (existe) {
+      clave = Math.floor(100000 + Math.random() * 900000).toString();
+      const { data } = await supabase
+        .from('invitados')
+        .select('id')
+        .eq('boda_id', bodaId)
+        .eq('clave_unica', clave);
+      existe = data && data.length > 0;
+    }
+    return clave;
+  };
+
+  const enviarCorreo = async (email, nombre, clave) => {
+    await fetch('/api/enviar-correo', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, nombre, clave }),
+    });
+  };
   const handleRegistro = async () => {
     if (!nombre || !relacion || !email) {
       alert('Por favor completa todos los campos obligatorios.');
@@ -42,7 +63,7 @@ function Register() {
       }
 
       const filename = `foto_${bodaId}_${Date.now()}_${fotoFile.name}`;
-      const { data: uploadData, error: uploadError } = await supabase.storage
+      const { error: uploadError } = await supabase.storage
         .from('imagenes')
         .upload(filename, fotoFile);
 
@@ -70,7 +91,6 @@ function Register() {
       foto: urlFoto,
     };
 
-    // Verificar si ya está registrado este correo en esta boda
     const { data: existentes } = await supabase
       .from('invitados')
       .select('*')
@@ -78,7 +98,6 @@ function Register() {
       .eq('email', email);
 
     if (existentes?.length > 0) {
-      // Ya estaba registrado, se actualiza su información
       await supabase
         .from('invitados')
         .update(datos)
@@ -96,12 +115,14 @@ function Register() {
         })
       );
     } else {
-      // Registro nuevo
+      const clave = await generarClaveUnica();
       const { data: insertado } = await supabase
         .from('invitados')
-        .insert({ ...datos, boda_id: bodaId })
+        .insert({ ...datos, boda_id: bodaId, clave_unica: clave })
         .select()
         .single();
+
+      await enviarCorreo(email, nombre, clave);
 
       localStorage.setItem(
         'yeswedo_invitado',
@@ -115,12 +136,11 @@ function Register() {
     setGuardando(false);
     navigate(`/${slug}`);
   };
-
   if (loading) return <p>Cargando información de la boda...</p>;
   if (!bodaId) return <p>Boda no encontrada.</p>;
 
   return (
-    <div style={styles.container}>
+    <div style={{ maxWidth: '500px', margin: '0 auto', padding: '2rem', fontFamily: 'sans-serif', textAlign: 'center' }}>
       <h2>Registro de Invitado</h2>
 
       <input
@@ -128,13 +148,13 @@ function Register() {
         placeholder="Tu nombre completo"
         value={nombre}
         onChange={(e) => setNombre(e.target.value)}
-        style={styles.input}
+        style={inputStyle}
       />
 
       <select
         value={relacion}
         onChange={(e) => setRelacion(e.target.value)}
-        style={styles.input}
+        style={inputStyle}
       >
         <option value="">Selecciona tu relación con los novios</option>
         <option value="Amigo de la novia">Amigo de la novia</option>
@@ -150,7 +170,7 @@ function Register() {
           placeholder="¿Cuál es tu relación?"
           value={otraRelacion}
           onChange={(e) => setOtraRelacion(e.target.value)}
-          style={styles.input}
+          style={inputStyle}
         />
       )}
 
@@ -158,7 +178,7 @@ function Register() {
         placeholder="Cuéntanos tu historia con los novios"
         value={historia}
         onChange={(e) => setHistoria(e.target.value)}
-        style={styles.textarea}
+        style={inputStyle}
       />
 
       <input
@@ -166,7 +186,7 @@ function Register() {
         placeholder="Tus redes sociales (opcional)"
         value={redes}
         onChange={(e) => setRedes(e.target.value)}
-        style={styles.input}
+        style={inputStyle}
       />
 
       <input
@@ -174,7 +194,7 @@ function Register() {
         placeholder="Tu correo electrónico"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        style={styles.input}
+        style={inputStyle}
       />
 
       <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>
@@ -184,47 +204,31 @@ function Register() {
         type="file"
         accept="image/*"
         onChange={(e) => setFotoFile(e.target.files[0])}
-        style={styles.input}
+        style={inputStyle}
       />
 
-      <button onClick={handleRegistro} disabled={guardando} style={styles.boton}>
+      <button onClick={handleRegistro} disabled={guardando} style={buttonStyle}>
         {guardando ? 'Guardando...' : 'Registrarme'}
       </button>
     </div>
   );
 }
 
-const styles = {
-  container: {
-    maxWidth: '500px',
-    margin: '0 auto',
-    padding: '2rem',
-    fontFamily: 'sans-serif',
-    textAlign: 'center',
-  },
-  input: {
-    width: '100%',
-    padding: '10px',
-    marginBottom: '1rem',
-    borderRadius: '6px',
-    border: '1px solid #ccc',
-  },
-  textarea: {
-    width: '100%',
-    padding: '10px',
-    minHeight: '80px',
-    marginBottom: '1rem',
-    borderRadius: '6px',
-    border: '1px solid #ccc',
-  },
-  boton: {
-    padding: '10px 20px',
-    backgroundColor: '#2980b9',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '6px',
-    cursor: 'pointer',
-  },
+const inputStyle = {
+  width: '100%',
+  padding: '10px',
+  marginBottom: '1rem',
+  borderRadius: '6px',
+  border: '1px solid #ccc',
+};
+
+const buttonStyle = {
+  padding: '10px 20px',
+  backgroundColor: '#2980b9',
+  color: '#fff',
+  border: 'none',
+  borderRadius: '6px',
+  cursor: 'pointer',
 };
 
 export default Register;

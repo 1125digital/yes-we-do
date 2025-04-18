@@ -1,4 +1,3 @@
-// src/Navbar.jsx
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 
@@ -7,9 +6,22 @@ const Navbar = ({ slug }) => {
     <nav style={styles.nav}>
       <NavLink to={`/${slug}/muro`} style={styles.link}>🏠</NavLink>
       <NavLink to={`/${slug}/album`} style={styles.link}>📷</NavLink>
-      <NavLink to={`/${slug}/chat`} style={styles.link}>💬</NavLink>
-      <NavLink to={`/${slug}/notificaciones`} style={styles.link}>📅</NavLink>
+      <NavLink to={`/${slug}/mesas`} style={styles.link}>🪑</NavLink>
+     
       <NavLink to={`/${slug}/evento-principal`} style={styles.link}>📍</NavLink>
+      <NavLink
+        to={`/${slug}/ajustes`}
+        style={{
+          ...styles.link,
+          backgroundColor: '#ecf0f1',
+          borderRadius: '50%',
+          padding: '6px',
+          border: '1px solid #bdc3c7',
+        }}
+        title="Ajustes"
+      >
+        ⚙️
+      </NavLink>
     </nav>
   );
 };
