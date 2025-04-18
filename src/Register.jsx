@@ -38,7 +38,6 @@ function Register() {
       body: JSON.stringify({ email, nombre, clave }),
     });
   };
-
   const handleRegistro = async () => {
     if (!nombre || !relacion || !email) {
       alert('Por favor completa todos los campos obligatorios.');
@@ -117,11 +116,18 @@ function Register() {
       );
     } else {
       const clave = await generarClaveUnica();
-      const { data: insertado } = await supabase
+      const { data: insertado, error } = await supabase
         .from('invitados')
         .insert({ ...datos, boda_id: bodaId, clave_unica: clave })
         .select()
         .single();
+
+      if (error) {
+        console.error("Error al insertar invitado:", error.message);
+        alert("Ocurrió un error al registrarte. Por favor intenta de nuevo.");
+        setGuardando(false);
+        return;
+      }
 
       await enviarCorreo(email, nombre, clave);
 
@@ -137,7 +143,6 @@ function Register() {
     setGuardando(false);
     navigate(`/${slug}/muro`);
   };
-
   if (loading) return <p>Cargando información de la boda...</p>;
   if (!bodaId) return <p>Boda no encontrada.</p>;
 
@@ -149,9 +154,19 @@ function Register() {
         Al registrarte en esta boda, recibirás un correo con tu código único para acceder a la aplicación.
       </p>
 
-      <input type="text" placeholder="Tu nombre completo" value={nombre} onChange={(e) => setNombre(e.target.value)} style={styles.input} />
+      <input
+        type="text"
+        placeholder="Tu nombre completo"
+        value={nombre}
+        onChange={(e) => setNombre(e.target.value)}
+        style={styles.input}
+      />
 
-      <select value={relacion} onChange={(e) => setRelacion(e.target.value)} style={styles.input}>
+      <select
+        value={relacion}
+        onChange={(e) => setRelacion(e.target.value)}
+        style={styles.input}
+      >
         <option value="">Selecciona tu relación con los novios</option>
         <option value="Amigo de la novia">Amigo de la novia</option>
         <option value="Amigo del novio">Amigo del novio</option>
@@ -161,19 +176,47 @@ function Register() {
       </select>
 
       {relacion === 'Otro' && (
-        <input type="text" placeholder="¿Cuál es tu relación?" value={otraRelacion} onChange={(e) => setOtraRelacion(e.target.value)} style={styles.input} />
+        <input
+          type="text"
+          placeholder="¿Cuál es tu relación?"
+          value={otraRelacion}
+          onChange={(e) => setOtraRelacion(e.target.value)}
+          style={styles.input}
+        />
       )}
 
-      <textarea placeholder="Cuéntanos tu historia con los novios" value={historia} onChange={(e) => setHistoria(e.target.value)} style={styles.textarea} />
+      <textarea
+        placeholder="Cuéntanos tu historia con los novios"
+        value={historia}
+        onChange={(e) => setHistoria(e.target.value)}
+        style={styles.textarea}
+      />
 
-      <input type="text" placeholder="Tus redes sociales (opcional)" value={redes} onChange={(e) => setRedes(e.target.value)} style={styles.input} />
+      <input
+        type="text"
+        placeholder="Tus redes sociales (opcional)"
+        value={redes}
+        onChange={(e) => setRedes(e.target.value)}
+        style={styles.input}
+      />
 
-      <input type="email" placeholder="Tu correo electrónico" value={email} onChange={(e) => setEmail(e.target.value)} style={styles.input} />
+      <input
+        type="email"
+        placeholder="Tu correo electrónico"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        style={styles.input}
+      />
 
       <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>
         Sube tu foto de perfil
       </label>
-      <input type="file" accept="image/*" onChange={(e) => setFotoFile(e.target.files[0])} style={styles.input} />
+      <input
+        type="file"
+        accept="image/*"
+        onChange={(e) => setFotoFile(e.target.files[0])}
+        style={styles.input}
+      />
 
       <button onClick={handleRegistro} disabled={guardando} style={styles.boton}>
         {guardando ? 'Guardando...' : 'Registrarme'}

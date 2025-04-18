@@ -1,4 +1,9 @@
 resend api key
 
 
-re_Mjrzvpth_9mcS6VHPj2HVS8oFJFawXXZ3
+re_C7ZisG6P_BPv2QqDVtJ774kbqbMoPPAnT
+
+
+git add .
+git commit -m "Registro completo con función de correo desde Vercel"
+git push origin main
